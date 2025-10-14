@@ -9,5 +9,5 @@ import { NxWelcome } from './nx-welcome';
   styleUrl: './app.css',
 })
 export class App {
-  protected title = 'angular-demo';
+  protected title = 'dashboard';
 }
