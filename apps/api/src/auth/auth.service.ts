@@ -18,7 +18,6 @@ export class AuthService {
     const isValid = await this.usersService.validatePassword(user, password);
     if (!isValid) return null;
     
-    // strip sensitive fields before returning
     const { password: _p, ...result } = user as any;
     return result;
   }
@@ -31,7 +30,6 @@ export class AuthService {
   }
 
   async loginWithCredentials(username: string, password: string) {
-    // 1. Find User
     const user = await this.usersService.findByUsername(username);
     this.logger.log('AuthService.loginWithCredentials', { username, user: user ? user.username : null });
 

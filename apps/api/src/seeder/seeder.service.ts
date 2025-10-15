@@ -53,14 +53,12 @@ export class SeederService implements OnModuleInit {
     this.logger.log('Seeding roles and permissions...');
     for (const [roleName, actions] of Object.entries(ROLE_PERMISSIONS)) {
       
-      // 1. Create or find the Role
       let role = await this.roleRepository.findOne({ where: { name: roleName } });
       if (!role) {
         role = await this.roleRepository.save(this.roleRepository.create({ name: roleName }));
         this.logger.log(`Created Role: ${roleName}`);
       }
 
-      // 2. Create Permissions associated with this Role
       for (const action of actions) {
         const permissionExists = await this.permissionRepository.findOne({ 
           where: { action: action, roleId: role.id } 

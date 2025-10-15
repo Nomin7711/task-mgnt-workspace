@@ -7,15 +7,15 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  password!: string; // Will be hashed by the service
+  password!: string; 
 
   @IsNumber()
   @IsNotEmpty()
-  roleId!: number; // e.g., 2 for 'Admin', 3 for 'Viewer'
+  roleId!: number; 
 
   @IsNumber()
   @IsNotEmpty()
-  organizationId!: number; // e.g., 1 for 'Corporate Headquarters'
+  organizationId!: number; 
 
   @IsString()
   @IsOptional()

@@ -14,22 +14,18 @@ export class Task {
   content?: string;
 
   @Column({ default: 'open' })
-  status!: string; // e.g., 'open', 'in-progress', 'done'
+  status!: string;
 
-  // Foreign Key for Owner/Creator
   @Column()
   ownerId!: number;
 
-  // Relations: Task is owned by one User
   @ManyToOne(() => User, user => user.ownedTasks)
   @JoinColumn({ name: 'ownerId' })
   owner!: User;
 
-  // Foreign Key for Organization (to enforce org-level access)
   @Column()
   organizationId!: number;
 
-  // Relations: Task belongs to one Organization
   @ManyToOne(() => Organization, org => org.tasks)
   @JoinColumn({ name: 'organizationId' })
   organization!: Organization;
