@@ -32,14 +32,17 @@ DB_TYPE=sqlite
 
 ### 4. Run Backend & Frontend
 
-Backend (NestJS API):
+## Backend (NestJS API):
 
-````bash
+```bash
 nx serve api
-Frontend (Angular Dashboard):
+```
+
+## Frontend (Angular Dashboard):
+
 ```bash
 nx serve dashboard
-````
+```
 
 ### Architecture Overview
 
@@ -53,38 +56,56 @@ libs/
 ├─ data/ → Shared TypeScript interfaces & DTOs
 ├─ auth/ → Reusable RBAC logic, decorators, and guards
 
-- Rationale: NX allows modularity, code sharing, and consistent dependency management.
+### 🧱 Rationale
 
-- Shared Libraries:
+I implemented this project using the **NX monorepo structure** because it allows me to organize the backend and frontend within a single, unified workspace.  
+This structure makes it easy to share code and manage dependencies consistently across both applications.
 
-- data: ensures consistent types between backend and frontend
+By separating each part into its own app (API and Dashboard) while still keeping them in the same repository, I can:
 
-- auth: centralizes RBAC logic for secure and maintainable access control
+- Develop backend and frontend in parallel without switching projects.
+- Reuse common logic like DTOs and interfaces.
+- Maintain consistency in types, data validation, and structure.
+- Speed up builds, testing, and linting since NX caches and coordinates all tasks efficiently.
+
+Overall, NX helps keep the codebase modular, scalable, and easy to extend if I want to add more services or apps later.
+
+### 📦 Shared Libraries
+
+I also implemented shared libraries to reduce duplication and improve maintainability:
+
+- **`data/`** → Contains shared **TypeScript interfaces, DTOs, and enums** used by both backend and frontend.  
+  This ensures that both sides use the same data structure, preventing mismatched fields and improving type safety.
+
+- **`auth/`** → Contains reusable **RBAC (Role-Based Access Control) logic**, including **custom decorators** and **guards** that check permissions.  
+  This makes access control logic centralized, meaning if I update a rule or add a new permission, it automatically applies everywhere in the system.  
+  It also improves code clarity — instead of repeating permission checks in every controller, I simply use decorators like `@Permissions('task:create')`.
+
+Using shared libraries gives the project a clear separation of concerns, encourages reusability, and keeps the logic consistent between frontend and backend.
 
 ### Data Model Explanation
 
-Core Entities
+#### Core Entities
 
-User → belongs to an organization, assigned a role
+- **User** → Belongs to an organization and has one role. Each user can own multiple tasks.
+- **Organization** → Supports a two-level hierarchy (parent → child) and links to both users and tasks.
+- **Role** → Defines access level (Owner, Admin, Viewer) and links to permissions.
+- **Permission** → Specifies allowed actions per role (CRUD, manage users/orgs, view logs).
+- **Task** → Associated with a user and organization; tracks title, description, status, and metadata.
+- **AuditLog** → Records user actions for transparency and compliance.
 
-Organization → 2-level hierarchy (parent → child)
+#### Design Rationale
 
-Role → Owner, Admin, Viewer
+This schema cleanly separates responsibilities:
 
-Task → belongs to a user/org, has title, description, status
+- **Type safety & reusability:** Using shared libraries for entities ensures consistency across backend and frontend.
+- **RBAC flexibility:** Permissions are linked to roles instead of users, simplifying updates when access policies change.
+- **Organizational hierarchy:** Supports real-world multi-tenant use cases with parent–child relationships.
+- **Auditing:** Every critical action is logged to improve security traceability.
 
-Permissions → define allowed actions (create/read/update/delete, manage users/orgs, read logs)
+## ERD/diagram
 
-### Example ERD
-
-```bash
-User ---belongs to---> Organization
-Task ---owned by---> User
-Role ---assigned to---> User
-Permissions ---assigned to---> Role
-```
-
-Each entity is strongly typed using TypeScript DTOs, making the backend robust and consistent.
+![alt text](image.png)
 
 ### Access Control Implementation
 
@@ -141,13 +162,21 @@ Viewer: Read-only access (Level 3)
 
 ### API Documentation
 
-| Method | Endpoint   | Description                         |
-| ------ | ---------- | ----------------------------------- |
-| POST   | /tasks     | Create task                         |
-| GET    | /tasks     | List accessible tasks               |
-| PUT    | /tasks/:id | Edit task                           |
-| DELETE | /tasks/:id | Delete task                         |
-| GET    | /audit-log | View access logs (Owner/Admin only) |
+| Method | Endpoint       | Description                               |
+| ------ | -------------- | ----------------------------------------- |
+| POST   | /tasks         | Create task                               |
+| GET    | /tasks         | List accessible tasks                     |
+| PUT    | /tasks/:id     | Edit task                                 |
+| DELETE | /tasks/:id     | Delete task                               |
+| GET    | /audit-log     | View access logs (Owner/Admin only)       |
+| POST   | /users         | Create user (Owner/Admin only)            |
+| GET    | /users         | List users (scoped by role/org)           |
+| PUT    | /users/:id     | Update user details                       |
+| DELETE | /users/:id     | Delete user                               |
+| POST   | /organizations | Create new organization or sub-department |
+| GET    | /organizations | List organizations (hierarchical)         |
+
+---
 
 ## Sample Request:
 
@@ -159,28 +188,65 @@ Content-Type: application/json
 {
   "title": "Finish Report",
   "description": "Complete by EOD",
-  "status": "pending"
+  "status": "pending",
+  "category": "Work",
+  "priority": "High"
 }
 ```
 
 ## Sample Response:
 
+```bash
 {
-"id": 1,
-"title": "Finish Report",
-"description": "Complete by EOD",
-"status": "pending",
-"ownerId": 5
+    "id": 1,
+    "title": "Contact project team",
+    "content": "contact with other teams",
+    "status": "To Do",
+    "category": "Personal",
+    "priority": "High",
+    "ownerId": 1,
+    "organizationId": 1,
+    "createdAt": "2025-10-18T00:36:52.000Z",
+    "updatedAt": "2025-10-18T00:36:52.000Z",
+    "owner": {
+    "id": 1,
+    "username": "superadmin",
+    "displayName": admin,
+    "roles": [
+        "Owner"
+        ],
+        "organizationId": 1,
+        "roleId": 1
+    },
+    "organization": {
+        "id": 1,
+        "name": "Corporate Headquarters",
+        "parentId": null
+    }
 }
+```
 
-### Future Considerations
+### 🧰 Postman Collection
 
-Advanced role delegation: Support temporary or conditional permissions
+You can test all API endpoints using the provided Postman collection:
 
-Production-ready security: JWT refresh tokens, CSRF protection, RBAC caching
+[📥 Download Postman Collection](./postman/task-mngt.postman_collection.json)
 
-Scaling permission checks: Optimize with caching or precomputed role-permission maps
+### 🚀 Future Considerations
+
+**Advanced Role Delegation:**  
+In the future, I’d like to extend the RBAC system to support more dynamic permission control. For example, allowing temporary or conditional roles for users — like giving a Viewer temporary Admin access for a specific task or time period. This would make the system more flexible in real-world team scenarios.
+
+**Production-Ready Security:**  
+For a production setup, I plan to implement JWT refresh tokens to avoid frequent re-login issues, add CSRF protection for safer HTTP requests, and introduce caching for RBAC data to minimize database lookups on each request. These steps will enhance both security and performance.
+
+**Scaling Permission Checks:**  
+As the system grows, permission validation could become heavy. To handle that, I plan to use in-memory caching or precomputed role-permission maps to quickly determine user rights without hitting the DB repeatedly. This would help the system scale smoothly as organizations and tasks increase.
 
 ### Summary
 
 I implemented this Task Management System in a modular NX monorepo with full role-based access control, JWT authentication, and task management features. My backend solution enforces security through decorators, guards, and scoped access, making it scalable and maintainable for real-world use.
+
+### Video Link
+
+https://drive.google.com/drive/folders/1pIrvaK3Iqq4wyQLFQznkA-mLbrFXpguR?usp=sharing
