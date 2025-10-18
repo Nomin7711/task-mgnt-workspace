@@ -1,77 +1,209 @@
-# AngularDemo
+# Task Management System
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A secure **Task Management System** with **role-based access control (RBAC)**, built in a modular NX monorepo. This system allows users to manage tasks securely, ensuring only authorized users can access and modify data based on their roles and organizational hierarchy.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+---
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 🏗 NX Monorepo Structure
 
-## Run tasks
+apps/
+├─ api/ → NestJS backend
+├─ dashboard/ → Angular frontend
+libs/
+├─ data/ → Shared TypeScript interfaces & DTOs
+├─ auth/ → Reusable RBAC logic and decorators
 
-To run the dev server for your app, use:
+---
 
-```sh
-npx nx serve dashboard
+## 🧩 Core Features
+
+### Backend (NestJS + TypeORM + SQLite/PostgreSQL)
+
+**Data Models**
+
+- Users
+- Organizations (2-level hierarchy)
+- Roles: Owner, Admin, Viewer
+- Permissions
+- Tasks (resource)
+
+**Access Control Logic**
+
+- Decorators & guards for access checks
+- Ownership & org-level access enforcement
+- Role inheritance logic
+- Task visibility scoped to role
+- Basic audit logging (console/file)
+
+**API Endpoints**
+
+- `POST /tasks` – Create task (with permission check)
+- `GET /tasks` – List accessible tasks (scoped to role/org)
+- `PUT /tasks/:id` – Edit task (if permitted)
+- `DELETE /tasks/:id` – Delete task (if permitted)
+- `GET /audit-log` – View access logs (Owner/Admin only)
+
+**Authentication**
+
+- JWT-based authentication
+- Login endpoint with token
+- Token verification middleware/guard in all endpoints
+
+---
+
+### Frontend (Angular + TailwindCSS)
+
+**Task Management Dashboard**
+
+- Create/Edit/Delete tasks
+- Sort, filter, and categorize (e.g., Work, Personal)
+- Drag-and-drop for reordering/status changes
+- Responsive design (mobile → desktop)
+
+**Authentication UI**
+
+- Login UI authenticating against backend
+- Store JWT and attach it to all API requests
+
+**State Management**
+
+- Any preferred Angular state management solution (NgRx, Akita, or service-based)
+
+**Bonus Features**
+
+- Task completion visualization (bar chart)
+- Dark/light mode toggle
+- Keyboard shortcuts for task actions
+
+---
+
+## 📊 System Stats (Example Badges)
+
+![Total Tasks](https://img.shields.io/badge/Total%20Tasks-128-blue)  
+![Completed Tasks](https://img.shields.io/badge/Completed-92-green)  
+![Pending Tasks](https://img.shields.io/badge/Pending-36-yellow)  
+![Total Users](https://img.shields.io/badge/Users-25-orange)  
+![Active Organizations](https://img.shields.io/badge/Organizations-5-purple)
+
+---
+
+## 🧪 Testing Strategy
+
+- **Backend**: Jest tests for RBAC logic, authentication, and API endpoints
+- **Frontend**: Jest/Karma tests for components and state logic
+
+---
+
+## ⚙️ Setup Instructions
+
+### Backend
+
+```bash
+cd apps/api
+cp .env.example .env
+npm install
+npm run start:dev
 ```
 
-To create a production bundle:
+Frond end
+cd apps/dashboard
+npm install
+npm start
 
-```sh
-npx nx build dashboard
-```
+.env file
+JWT_SECRET=Qwerty123!
+JWT_EXPIRES_IN=3600
+BCRYPT_SALT_ROUNDS=10
+DB_TYPE=sqlite
+Architecture Overview
 
-To see all available targets to run for a project, run:
+NX Monorepo to separate backend, frontend, and shared libraries
 
-```sh
-npx nx show project dashboard
-```
+libs/data contains shared DTOs/interfaces
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+libs/auth contains RBAC decorators and guards
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Modular structure ensures reusability and scalability
 
-## Add new projects
+Data Model & ERD
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+Users: id, name, email, password, role, organization
 
-Use the plugin's generator to create new projects.
+Organizations: id, name, parentOrganizationId
 
-To generate a new application, use:
+Roles: Owner → Admin → Viewer
 
-```sh
-npx nx g @nx/angular:app demo
-```
+Tasks: id, title, description, category, status, ownerId, organizationId
 
-To generate a new library, use:
+Permissions: CRUD per resource per role
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
+ERD Diagram (example)
+Users --< Tasks
+Organizations --< Users
+Roles --< Permissions
+Access Control
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+Role-based access control using decorators & guards
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Role inheritance: Owner > Admin > Viewer
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Task visibility scoped to organization and role
 
-## Install Nx Console
+JWT authentication integrated with RBAC guards
+API Documentation (Sample)
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+Create Task
+POST /tasks
+Body:
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+{
+"title": "Finish Report",
+"category": "Work",
+"priority": "High"
+}
+Headers: Authorization: Bearer <token>
 
-## Useful links
+Get Tasks
+GET /tasks
+Returns tasks visible to the logged-in user based on role/org
 
-Learn more:
+Update Task
+PUT /tasks/:id
+Body: Updated task details (requires permission)
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Delete Task
+DELETE /tasks/:id
+Deletes task (requires permission)
 
-And join the Nx community:
+Audit Logs
+GET /audit-log
+Accessible by Owner/Admin only
+Future Considerations
 
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Advanced role delegation
+
+Production-ready security: JWT refresh tokens, CSRF protection, RBAC caching
+
+Scaling permission checks efficiently
+
+🎨 Frontend Features
+
+Task CRUD operations
+
+Drag-and-drop reordering
+
+Sort and filter by category or status
+
+Responsive UI with dark/light mode toggle
+
+Optional chart visualization for task completion
+
+📄 License
+
+MIT License
+
+---
+
+If you want, I can also **add screenshots and diagram placeholders** directly in this README so it looks **professional for GitHub**.
+
+Do you want me to do that next?
