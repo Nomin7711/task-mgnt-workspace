@@ -1,0 +1,102 @@
+<div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-lg border-t-4 border-fuchsia-600">
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center tracking-tight">
+      {{ task ? 'Edit Task' : 'Add New Task' }}
+    </h2>
+  
+    <!-- Error Message -->
+    <div
+      *ngIf="error$ | async as error"
+      class="bg-red-50 border border-red-300 text-red-600 px-4 py-3 rounded-lg relative mb-6 text-sm"
+    >
+      {{ error }}
+    </div>
+  
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Title -->
+      <div class="mb-5">
+        <label for="title" class="block text-gray-600 text-sm font-medium mb-2">Title</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+          placeholder="e.g., Finalize project report"
+        />
+        <div
+          *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          <span *ngIf="taskForm.get('title')?.errors?.['required']">Title is required.</span>
+          <span *ngIf="taskForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters.</span>
+        </div>
+      </div>
+  
+      <!-- Description -->
+      <div class="mb-5">
+        <label for="content" class="block text-gray-600 text-sm font-medium mb-2">Description</label>
+        <textarea
+          id="content"
+          formControlName="content"
+          rows="4"
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+          placeholder="Add details about the task..."
+        ></textarea>
+        <div
+          *ngIf="taskForm.get('content')?.invalid && taskForm.get('content')?.touched"
+          class="text-red-500 text-xs mt-1"
+        >
+          <span *ngIf="taskForm.get('content')?.errors?.['required']">Description is required.</span>
+        </div>
+      </div>
+  
+      <!-- Category -->
+      <div class="mb-5">
+        <label for="category" class="block text-gray-600 text-sm font-medium mb-2">Category</label>
+        <select
+          id="category"
+          formControlName="category"
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+        >
+          <option *ngFor="let cat of taskCategories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+  
+      <!-- Priority -->
+      <div class="mb-5">
+        <label for="priority" class="block text-gray-600 text-sm font-medium mb-2">Priority</label>
+        <select
+          id="priority"
+          formControlName="priority"
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+        >
+          <option *ngFor="let priority of taskPriorities" [value]="priority">{{ priority }}</option>
+        </select>
+      </div>
+  
+      <!-- Status -->
+      <div class="mb-8">
+        <label for="status" class="block text-gray-600 text-sm font-medium mb-2">Status</label>
+        <select
+          id="status"
+          formControlName="status"
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+        >
+          <option *ngFor="let status of taskStatuses" [value]="status">{{ status }}</option>
+        </select>
+      </div>
+  
+      <!-- Submit -->
+      <div>
+        <button
+          type="submit"
+          [disabled]="taskForm.invalid || (loading$ | async)"
+          class="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg shadow-fuchsia-200/50 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 transition duration-300 ease-in-out disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
+        >
+          <span *ngIf="loading$ | async; else buttonText">{{ task ? 'Updating Task...' : 'Adding Task...' }}</span>
+          <ng-template #buttonText>{{ task ? 'Edit Task' : 'Add Task' }}</ng-template>
+        </button>
+      </div>
+    </form>
+  </div>
+  

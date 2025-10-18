@@ -1,0 +1,381 @@
+<div
+  class="p-6 min-h-screen transition-colors duration-300"
+  [class.bg-gray-900]="isDarkMode"
+  [class.bg-gray-50]="!isDarkMode"
+>
+  <header class="flex justify-between items-center mb-6">
+    <h1
+      class="text-3xl font-bold"
+      [class.text-white]="isDarkMode"
+      [class.text-gray-800]="!isDarkMode"
+    >
+      Task Management Dashboard
+    </h1>
+
+    <div class="flex items-center gap-4">
+      <button
+        (click)="toggleDarkMode()"
+        class="p-2 rounded-full border transition-all duration-300"
+        [class.bg-gray-700]="isDarkMode"
+        [class.bg-gray-200]="!isDarkMode"
+        [class.text-white]="isDarkMode"
+      >
+        <span *ngIf="!isDarkMode">🌙</span>
+        <span *ngIf="isDarkMode">☀️</span>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <img
+          [src]="
+            'https://api.dicebear.com/9.x/initials/svg?seed=' +
+            ((displayName$ | async) ?? 'Great User')
+          "
+          alt="User Avatar"
+          class="w-8 h-8 rounded-full"
+        />
+
+        <div>
+          <p class="font-semibold text-sm" [class.text-white]="isDarkMode">
+            {{ (displayName$ | async) ?? 'Great User' }}
+          </p>
+
+          <p class="text-xs text-gray-500" [class.text-gray-400]="isDarkMode">
+            {{ (username$ | async) ?? 'Username' }}
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="logout()"
+        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md"
+      >
+        Logout
+      </button>
+    </div>
+  </header>
+  <div class="flex gap-4 my-4">
+    <button
+      class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md"
+      (click)="openAddTaskModal()"
+    >
+      + Add New Task
+    </button>
+    <div class="relative h-full">
+      <select
+        [(ngModel)]="selectedCategory"
+        class="appearance-none border border-gray-300 rounded-lg px-3 py-2.5 pr-8 text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer transition duration-150"
+      >
+        <option value="All">All Categories</option>
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <!-- Arrow Icon -->
+      <div
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300"
+      >
+        ▼
+      </div>
+    </div>
+    <button
+      (click)="showChart = !showChart"
+      class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md"
+    >
+      {{ showChart ? 'Show Task List' : 'Show Task Chart' }}
+    </button>
+  </div>
+  <div *ngIf="!showChart" class="grid grid-cols-3 gap-6">
+    <div
+      [class.bg-gray-800]="isDarkMode"
+      [class.bg-gray-100]="!isDarkMode"
+      class="rounded-lg p-4"
+    >
+      <h2 class="text-xl font-semibold mb-2" [class.text-white]="isDarkMode">
+        To Do
+        <button (click)="sortColumn('todo', 'asc')">▲</button>
+        <button (click)="sortColumn('todo', 'desc')">▼</button>
+      </h2>
+      <div
+        cdkDropList
+        [cdkDropListData]="todoTasks"
+        (cdkDropListDropped)="drop($event, 'To Do')"
+        class="space-y-4"
+      >
+        <div
+          *ngFor="let task of getFilteredTasks(todoTasks, todoSortOrder)"
+          cdkDrag
+          [ngClass]="getTaskColor(task.status)"
+          class="flex justify-between items-start cursor-move"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-gray-400 cursor-grab"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="20" x2="6" y2="20"></line>
+              <line x1="18" y1="14" x2="6" y2="14"></line>
+              <line x1="18" y1="8" x2="6" y2="8"></line>
+            </svg>
+            <div>
+              <h3 class="font-bold text-lg mb-1">{{ task.title }}</h3>
+              <p class="text-sm text-gray-400">
+                {{ task.category }} | {{ task.priority }}
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              (click)="openEditTaskModal(task)"
+              class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z"
+                />
+              </svg>
+            </button>
+
+            <button
+              (click)="deleteTask(task)"
+              class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-1 12H6L5 7m5-4h4l1 4H9l1-4z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      [class.bg-gray-800]="isDarkMode"
+      [class.bg-gray-100]="!isDarkMode"
+      class="rounded-lg p-4"
+    >
+      <h2 class="text-xl font-semibold mb-2" [class.text-white]="isDarkMode">
+        In Progress
+        <button (click)="sortColumn('inProgress', 'asc')">▲</button>
+        <button (click)="sortColumn('inProgress', 'desc')">▼</button>
+      </h2>
+      <div
+        cdkDropList
+        [cdkDropListData]="inProgressTasks"
+        (cdkDropListDropped)="drop($event, 'In Progress')"
+        class="space-y-4 min-h-[50px]"
+      >
+        <div
+          *ngFor="
+            let task of getFilteredTasks(inProgressTasks, inProgressSortOrder)
+          "
+          cdkDrag
+          [ngClass]="getTaskColor(task.status)"
+          class="flex justify-between items-start cursor-move"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-gray-400 cursor-grab"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="20" x2="6" y2="20"></line>
+              <line x1="18" y1="14" x2="6" y2="14"></line>
+              <line x1="18" y1="8" x2="6" y2="8"></line>
+            </svg>
+            <div>
+              <h3 class="font-bold text-lg mb-1">{{ task.title }}</h3>
+              <p class="text-sm text-gray-400">
+                {{ task.category }} | {{ task.priority }}
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              (click)="openEditTaskModal(task)"
+              class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z"
+                />
+              </svg>
+            </button>
+
+            <button
+              (click)="deleteTask(task)"
+              class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-1 12H6L5 7m5-4h4l1 4H9l1-4z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      [class.bg-gray-800]="isDarkMode"
+      [class.bg-gray-100]="!isDarkMode"
+      class="rounded-lg p-4"
+    >
+      <h2 class="text-xl font-semibold mb-2" [class.text-white]="isDarkMode">
+        Done
+        <button (click)="sortColumn('done', 'asc')">▲</button>
+        <button (click)="sortColumn('done', 'desc')">▼</button>
+      </h2>
+      <div
+        cdkDropList
+        [cdkDropListData]="doneTasks"
+        (cdkDropListDropped)="drop($event, 'Done')"
+        class="space-y-4"
+      >
+        <div
+          *ngFor="let task of getFilteredTasks(doneTasks, doneSortOrder)"
+          cdkDrag
+          [ngClass]="getTaskColor(task.status)"
+          class="flex justify-between items-start cursor-move"
+        >
+          <div class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-gray-400 cursor-grab"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="20" x2="6" y2="20"></line>
+              <line x1="18" y1="14" x2="6" y2="14"></line>
+              <line x1="18" y1="8" x2="6" y2="8"></line>
+            </svg>
+            <div>
+              <h3 class="font-bold text-lg mb-1">{{ task.title }}</h3>
+              <p class="text-sm text-gray-400">
+                {{ task.category }} | {{ task.priority }}
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              (click)="openEditTaskModal(task)"
+              class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7 text-blue-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z"
+                />
+              </svg>
+            </button>
+
+            <button
+              (click)="deleteTask(task)"
+              class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-7 w-7 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-1 12H6L5 7m5-4h4l1 4H9l1-4z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="showChart" class="flex justify-center my-10">
+    <div
+      class="w-full max-w-3xl p-4 bg-white rounded-lg shadow-lg dark:bg-gray-800"
+    >
+      <app-task-bar-chart
+        [todoTasks]="todoTasks"
+        [inProgressTasks]="inProgressTasks"
+        [doneTasks]="doneTasks"
+      >
+      </app-task-bar-chart>
+    </div>
+  </div>
+  <app-modal [isOpen]="showAddTaskModal" (closeModal)="closeAddTaskModal()">
+    <app-add-task
+      [task]="selectedTask"
+      (closeModal)="closeAddTaskModal()"
+    ></app-add-task>
+  </app-modal>
+  <app-modal [isOpen]="showEditTaskModal" (closeModal)="closeEditTaskModal()">
+    <app-add-task
+      [task]="selectedTask"
+      (closeModal)="closeEditTaskModal()"
+    ></app-add-task>
+  </app-modal>
+</div>

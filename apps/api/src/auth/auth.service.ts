@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { User } from '@task-mgnt-workspace/data'; 
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -26,13 +27,18 @@ export class AuthService {
     const payload = { sub: user.id, username: user.username, roles: user.roles || [] };
     return {
       access_token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        username: user.username,
+        displayName: (user as any).displayName || user.username,
+        roles: user.roles || []
+      }
     };
   }
 
   async loginWithCredentials(username: string, password: string) {
     const user = await this.usersService.findByUsername(username);
     this.logger.log('AuthService.loginWithCredentials', { username, user: user ? user.username : null });
-
     if (!user) {
         throw new UnauthorizedException('Invalid credentials');
     }
@@ -41,7 +47,7 @@ export class AuthService {
     if (!isValid) {
         throw new UnauthorizedException('Invalid credentials');
     }
-
+    
     const { password: _p, ...userWithoutPassword } = user as any;
     
     return this.login({ 

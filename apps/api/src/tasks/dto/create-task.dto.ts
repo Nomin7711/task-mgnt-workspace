@@ -1,6 +1,5 @@
 // src/tasks/dto/create-task.dto.ts
-
-import { IsString, IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsIn, Length } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -12,4 +11,18 @@ export class CreateTaskDto {
   @IsOptional()
   content?: string;
 
+  @IsString()
+  @IsOptional()
+  @IsIn(['Work', 'Personal', 'Other'])
+  category?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['High', 'Medium', 'Low'])
+  priority?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['To Do', 'In Progress', 'Done'])
+  status?: string;
 }

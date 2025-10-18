@@ -1,0 +1,47 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 p-4 font-sans">
+  <div class="bg-white p-10 rounded-xl shadow-2xl w-full max-w-sm border-t-4 border-fuchsia-600">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center tracking-tight">
+      Task Manager Login
+    </h2>
+    
+    <div *ngIf="error$ | async as error" class="bg-red-50 border border-red-300 text-red-600 px-4 py-3 rounded-lg relative mb-6 text-sm">
+        {{ error }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      
+      <div class="mb-5">
+        <label for="username" class="block text-gray-600 text-sm font-medium mb-2">Username</label>
+        <input 
+          id="username" 
+          type="text" 
+          formControlName="username" 
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+          placeholder="Enter your username"
+        >
+      </div>
+
+      <div class="mb-8">
+        <label for="password" class="block text-gray-600 text-sm font-medium mb-2">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          formControlName="password" 
+          class="w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 transition duration-150"
+          placeholder="***********"
+        >
+      </div>
+      
+      <div>
+        <button 
+          type="submit" 
+          [disabled]="loginForm.invalid || (loading$ | async)"
+          class="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg shadow-fuchsia-200/50 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:ring-offset-2 transition duration-300 ease-in-out disabled:opacity-50 disabled:shadow-none"
+        >
+          <span *ngIf="loading$ | async; else loginText">Logging in...</span>
+          <ng-template #loginText>Sign In</ng-template>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
