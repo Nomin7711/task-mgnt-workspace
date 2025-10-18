@@ -1,3 +1,4 @@
+// src/tasks/entities/task.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Organization } from './organization.entity';
@@ -13,8 +14,14 @@ export class Task {
   @Column({ type: 'text', nullable: true })
   content?: string;
 
-  @Column({ default: 'open' })
+  @Column({ default: 'To Do' })
   status!: string;
+
+  @Column({ default: 'Work' })
+  category!: string;
+
+  @Column({ default: 'Medium' })
+  priority!: string;
 
   @Column()
   ownerId!: number;
@@ -36,3 +43,4 @@ export class Task {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updatedAt!: Date;
 }
+
