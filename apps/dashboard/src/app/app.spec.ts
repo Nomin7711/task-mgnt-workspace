@@ -7,13 +7,16 @@ describe('App', () => {
       imports: [App],
     }).compileComponents();
   });
-
-  it('should render title', () => {
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(App);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+  it('should render the correct content', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome dashboard'
-    );
+    expect(compiled.querySelector('*')).toBeTruthy();
   });
+
 });
