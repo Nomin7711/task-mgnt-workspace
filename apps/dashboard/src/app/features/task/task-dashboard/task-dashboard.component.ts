@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject, HostListener } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { Task, TaskStatus } from '../models/task.model';
+import { Task, TaskStatus, TaskCategory, TaskPriority } from '../models/task.model';
 import { TaskState } from '../../../state/task/task.reducer';
 import { TaskActions } from '../../../state/task/task.actions';
 import { AuthActions } from '../../../state/auth/auth.actions';
@@ -17,6 +17,10 @@ interface AppState {
   tasks: TaskState;
   auth: any;
 }
+type CategoryColors = {
+  bgClass: string;
+  textClass: string;
+};
 
 @Component({
   selector: 'app-task-dashboard',
@@ -76,7 +80,17 @@ export class TaskDashboardComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  openAddTaskModal(): void { this.selectedTask = null; this.showAddTaskModal = true; }
+  openAddTaskModal(defaultStatus?: TaskStatus): void { 
+    const newTask: Task = {
+      id: '',
+      title: '',
+      content: '',
+      status: defaultStatus || 'To Do', 
+      category: 'Work', 
+      priority: 'Medium',
+    };
+    this.selectedTask = null; 
+    this.showAddTaskModal = true; }
   closeAddTaskModal(): void { this.showAddTaskModal = false; }
   openEditTaskModal(task: Task): void { 
     console.log(this.selectedTask);
@@ -121,14 +135,29 @@ export class TaskDashboardComponent implements OnInit, OnDestroy {
   }
 
   logout(): void { this.store.dispatch(AuthActions.logout()); }
-
-  getTaskColor(status: string): string {
-    const base = 'bg-white rounded-xl p-4 shadow-md transition transform hover:scale-[1.01]';
-    switch (status) {
-      case 'To Do': return `${base} border-l-4 border-blue-400`;
-      case 'In Progress': return `${base} border-l-4 border-yellow-400`;
-      case 'Done': return `${base} border-l-4 border-green-400`;
-      default: return `${base} border-l-4 border-gray-300`;
+  
+  getCategoryColorClass(category: string): CategoryColors {
+    switch (category.toLowerCase()) {
+      case 'work':
+        return {
+          bgClass: 'bg-blue-500 dark:bg-blue-900',
+          textClass: 'text-white dark:text-blue-200',
+        };
+      case 'personal':
+        return {
+          bgClass: 'bg-green-500 dark:bg-green-900',
+          textClass: 'text-white dark:text-green-200',
+        };
+      case 'other':
+        return {
+          bgClass: 'bg-slate-500 dark:bg-slate-700',
+          textClass: 'text-white dark:text-slate-200',
+        };
+      default:
+        return {
+          bgClass: 'bg-fuchsia-600 dark:bg-fuchsia-900',
+          textClass: 'text-white dark:text-fuchsia-200',
+        };
     }
   }
 
