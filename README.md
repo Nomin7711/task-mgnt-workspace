@@ -87,7 +87,7 @@ Using shared libraries gives the project a clear separation of concerns, encoura
 
 ### 🧩 Use Case Diagram Description – Task Management System
 
-## Entities: User, Organization, Role, Permission, Task, AuditLog
+#### Entities: User, Organization, Role, Permission, Task, AuditLog
 
 1. The system should register Users and assign them to specific Organizations.
 2. The system should allow Users to log in using JWT authentication.
@@ -272,7 +272,7 @@ For a production setup, I plan to implement JWT refresh tokens to avoid frequent
 **Scaling Permission Checks:**
 As the system grows, permission validation could become heavy. To handle that, I plan to use in-memory caching or precomputed role-permission maps to quickly determine user rights without hitting the DB repeatedly. This would help the system scale smoothly as organizations and tasks increase. -->
 
-🚀 Future Considerations
+### 🚀 Future Considerations
 
 Collaborative Tasks:
 In the future, the system could allow adding coworkers or team members to tasks, so multiple users can work on the same task and track progress together.
@@ -289,4 +289,4 @@ I implemented this Task Management System in a modular NX monorepo with full rol
 
 ### Video Link
 
-<!-- https://drive.google.com/drive/folders/1pIrvaK3Iqq4wyQLFQznkA-mLbrFXpguR?usp=sharing -->
+https://drive.google.com/drive/folders/1pIrvaK3Iqq4wyQLFQznkA-mLbrFXpguR?usp=sharing
