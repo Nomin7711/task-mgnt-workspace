@@ -48,6 +48,7 @@ nx serve dashboard
 
 ### NX Monorepo Layout
 
+```bash
 apps/
 ├─ api/ → NestJS backend
 ├─ dashboard/ → Angular frontend
@@ -55,6 +56,7 @@ apps/
 libs/
 ├─ data/ → Shared TypeScript interfaces & DTOs
 ├─ auth/ → Reusable RBAC logic, decorators, and guards
+```
 
 ### 🧱 Rationale
 
