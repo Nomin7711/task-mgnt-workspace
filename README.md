@@ -83,6 +83,25 @@ I also implemented shared libraries to reduce duplication and improve maintainab
 
 Using shared libraries gives the project a clear separation of concerns, encourages reusability, and keeps the logic consistent between frontend and backend.
 
+### 🧩 Use Case Diagram Description – Task Management System
+
+## Entities: User, Organization, Role, Permission, Task, AuditLog
+
+1. The system should register Users and assign them to specific Organizations.
+2. The system should allow Users to log in using JWT authentication.
+3. The system should validate User roles (Owner, Admin, Viewer) upon login.
+4. The system should allow authorized Users to create, edit, delete Tasks.
+5. The system should display all Tasks visible to the User, based on their role and organization.
+6. The system should restrict access so that Viewers can only view, not edit or delete tasks.
+7. The system should enforce organization-level access, allowing Users to only interact with data within their organization or its children.
+8. The system should log all important User actions (e.g., task creation, deletion, login) into the AuditLog.
+9. The system should allow Owners and Admins to view the Audit Log for compliance and security tracking.
+10. The system should support multi-level Organizations (parent → child hierarchy).
+11. The system should inherit role permissions, so Admins automatically get Viewer access capabilities.
+12. The system should allow Admins to create or manage users within their organization scope.
+13. The system should prevent unauthorized Users from accessing or modifying data from other organizations.
+14. The system should display Task analytics (e.g., bar charts) for Owners/Admins.
+
 ### Data Model Explanation
 
 #### Core Entities
@@ -103,9 +122,17 @@ This schema cleanly separates responsibilities:
 - **Organizational hierarchy:** Supports real-world multi-tenant use cases with parent–child relationships.
 - **Auditing:** Every critical action is logged to improve security traceability.
 
+## Class diagram
+
+![alt text](image-1.png)
+
 ## ERD/diagram
 
 ![alt text](image.png)
+
+## Solution architect diagram
+
+![alt text](image-2.png)
 
 ### Access Control Implementation
 
@@ -232,16 +259,27 @@ You can test all API endpoints using the provided Postman collection:
 
 [📥 Download Postman Collection](./postman/task-mngt.postman_collection.json)
 
-### 🚀 Future Considerations
+<!-- ### 🚀 Future Considerations
 
-**Advanced Role Delegation:**  
+**Advanced Role Delegation:**
 In the future, I’d like to extend the RBAC system to support more dynamic permission control. For example, allowing temporary or conditional roles for users — like giving a Viewer temporary Admin access for a specific task or time period. This would make the system more flexible in real-world team scenarios.
 
-**Production-Ready Security:**  
+**Production-Ready Security:**
 For a production setup, I plan to implement JWT refresh tokens to avoid frequent re-login issues, add CSRF protection for safer HTTP requests, and introduce caching for RBAC data to minimize database lookups on each request. These steps will enhance both security and performance.
 
-**Scaling Permission Checks:**  
-As the system grows, permission validation could become heavy. To handle that, I plan to use in-memory caching or precomputed role-permission maps to quickly determine user rights without hitting the DB repeatedly. This would help the system scale smoothly as organizations and tasks increase.
+**Scaling Permission Checks:**
+As the system grows, permission validation could become heavy. To handle that, I plan to use in-memory caching or precomputed role-permission maps to quickly determine user rights without hitting the DB repeatedly. This would help the system scale smoothly as organizations and tasks increase. -->
+
+🚀 Future Considerations
+
+Collaborative Tasks:
+In the future, the system could allow adding coworkers or team members to tasks, so multiple users can work on the same task and track progress together.
+
+Task Scheduling:
+Adding time selection or deadlines for tasks will help users plan and prioritize their work more effectively.
+
+Enhanced Notifications:
+Users could receive reminders or notifications for upcoming tasks or changes made by collaborators.
 
 ### Summary
 
@@ -249,4 +287,4 @@ I implemented this Task Management System in a modular NX monorepo with full rol
 
 ### Video Link
 
-https://drive.google.com/drive/folders/1pIrvaK3Iqq4wyQLFQznkA-mLbrFXpguR?usp=sharing
+<!-- https://drive.google.com/drive/folders/1pIrvaK3Iqq4wyQLFQznkA-mLbrFXpguR?usp=sharing -->
