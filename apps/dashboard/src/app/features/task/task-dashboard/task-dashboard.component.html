@@ -1,4 +1,4 @@
-<div class="flex min-h-screen bg-amber-400">
+<!-- <div class="flex min-h-screen bg-amber-400">
   <aside
     class="w-60 h-screen sticky top-0 left-0 p-4 transition-colors duration-300 z-10"
     [class.bg-white]="!isDarkMode"
@@ -59,7 +59,7 @@
             d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
           />
         </svg>
-        Dashboard
+        Tasks
       </a>
 
       <a
@@ -140,6 +140,12 @@
         Settings
       </a>
     </nav>
+    <button
+      (click)="logout()"
+      class="mt-4 w-full py-2 px-4 rounded-lg shadow-md border-0"
+    >
+      Logout
+    </button>
   </aside>
 
   <main
@@ -147,7 +153,7 @@
     [class.bg-gray-50]="!isDarkMode"
     [class.bg-gray-900]="isDarkMode"
   >
-    <header class="flex justify-between items-center px-6 pt-6 pb-4">
+    <header class="flex justify-between items-center px-6 pt-6">
       <div class="flex items-center w-full max-w-lg">
         <h1
           class="text-3xl font-semibold mr-8"
@@ -508,6 +514,40 @@
     (closeModal)="closeAddTaskModal()"
   ></app-add-task>
 </app-modal>
+<app-modal [isOpen]="showEditTaskModal" (closeModal)="closeEditTaskModal()">
+  <app-add-task [task]="selectedTask" (closeModal)="closeEditTaskModal()" />
+</app-modal> -->
+<div class="flex min-h-screen -m-2">
+  <app-sidebar [isDarkMode]="isDarkMode" (logout)="logout()"></app-sidebar>
+
+  <main
+    class="flex-grow transition-colors duration-300"
+    [class.bg-gray-50]="!isDarkMode"
+    [class.bg-gray-900]="isDarkMode"
+  >
+    <app-header
+      [isDarkMode]="isDarkMode"
+      [displayName$]="displayName$"
+      (toggleDarkMode)="toggleDarkMode()"
+      (openAddTaskModal)="openAddTaskModal()"
+      (categoryChanged)="onCategoryChange($event)"
+    ></app-header>
+
+    <app-task-board
+      [isDarkMode]="isDarkMode"
+      (openAddTaskModal)="onAddTaskModal($event)"
+      (openEditTaskModal)="onEditTaskModal($event)"
+    ></app-task-board>
+  </main>
+</div>
+
+<app-modal [isOpen]="showAddTaskModal" (closeModal)="closeAddTaskModal()">
+  <app-add-task
+    [task]="selectedTask"
+    (closeModal)="closeAddTaskModal()"
+  ></app-add-task>
+</app-modal>
+
 <app-modal [isOpen]="showEditTaskModal" (closeModal)="closeEditTaskModal()">
   <app-add-task [task]="selectedTask" (closeModal)="closeEditTaskModal()" />
 </app-modal>

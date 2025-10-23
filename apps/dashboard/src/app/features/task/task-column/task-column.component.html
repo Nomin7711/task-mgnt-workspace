@@ -1,0 +1,92 @@
+<div>
+  <h2
+    class="flex justify-between items-center text-lg font-semibold mb-4"
+    [class.text-gray-800]="!isDarkMode"
+    [class.text-white]="isDarkMode"
+  >
+    <span>{{ title }}</span>
+    <div class="flex items-center gap-2">
+      <button
+        (click)="toggleSort()"
+        class="text-gray-400 hover:text-gray-600 text-sm bg-transparent border-none outline-none p-0 m-0 focus:outline-none focus:ring-0"
+        [class.text-fuchsia-600]="sortOrder"
+      >
+        {{ sortOrder === 'asc' ? '↑' : sortOrder === 'desc' ? '↓' : '↕' }}
+      </button>
+      <button
+        (click)="addTask.emit()"
+        class="text-gray-400 hover:text-gray-600 text-2xl font-light bg-transparent border-none outline-none p-0 m-0 focus:outline-none focus:ring-0"
+      >
+        +
+      </button>
+    </div>
+  </h2>
+
+  <div
+    cdkDropList
+    [cdkDropListData]="tasks"
+    (cdkDropListDropped)="dropTask.emit($event)"
+    class="space-y-4 min-h-[50px]"
+  >
+    <div
+      *ngFor="let task of getFilteredTasks()"
+      cdkDrag
+      class="shadow-md rounded-xl p-4 border dark:border-gray-700 cursor-move"
+      [class.bg-gray-800]="isDarkMode"
+      [class.bg-white]="!isDarkMode"
+      [class.border-fuchsia-200]="isDarkMode"
+      [class.border-gray-200]="!isDarkMode"
+    >
+      <div class="flex justify-between items-start mb-2">
+        <p
+          class="text-xs font-medium rounded-md p-1"
+          [ngClass]="
+            getCategoryColorClass(task.category).bgClass +
+            ' ' +
+            getCategoryColorClass(task.category).textClass
+          "
+        >
+          {{ task.category || 'No Label' }}
+        </p>
+        <div class="flex gap-1">
+          <!-- Edit button -->
+          <button
+            (click)="editTask.emit(task)"
+            class="text-gray-400 hover:text-gray-600 text-xl font-light bg-transparent border-none outline-none p-0 m-0 focus:outline-none focus:ring-0 min-w-0 h-6 w-6 flex items-center justify-center"
+          >
+            ⋯
+          </button>
+          <!-- Delete button -->
+          <button
+            (click)="onDeleteTask(task)"
+            class="text-gray-400 hover:text-red-500 text-xl font-light bg-transparent border-none outline-none p-0 m-0 focus:outline-none focus:ring-0 min-w-0 h-6 w-6 flex items-center justify-center"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+
+      <h3
+        class="font-semibold text-lg mb-1"
+        [class.text-gray-800]="!isDarkMode"
+        [class.text-white]="isDarkMode"
+      >
+        {{ task.title }}
+      </h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Priority: {{ task.priority }}
+      </p>
+
+      <div class="flex justify-start items-center space-x-[-8px]">
+        <img
+          [src]="
+            'https://api.dicebear.com/9.x/initials/svg?seed=' +
+            ((displayName$ | async) || 'US')
+          "
+          alt="User Avatar"
+          class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800"
+        />
+      </div>
+    </div>
+  </div>
+</div>

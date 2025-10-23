@@ -1,0 +1,145 @@
+<div class="flex min-h-screen">
+  <app-sidebar [isDarkMode]="isDarkMode" (logout)="logout()"></app-sidebar>
+
+  <main
+    class="flex-grow transition-colors duration-300"
+    [class.bg-gray-50]="!isDarkMode"
+    [class.bg-gray-900]="isDarkMode"
+  >
+    <div class="p-6">
+      <h1
+        class="text-3xl font-semibold mb-6"
+        [class.text-gray-800]="!isDarkMode"
+        [class.text-white]="isDarkMode"
+      >
+        Analytics
+      </h1>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Task Distribution Chart -->
+        <div
+          class="p-6 rounded-lg shadow-lg"
+          [class.bg-white]="!isDarkMode"
+          [class.bg-gray-800]="isDarkMode"
+        >
+          <h2
+            class="text-xl font-semibold mb-4"
+            [class.text-gray-800]="!isDarkMode"
+            [class.text-white]="isDarkMode"
+          >
+            Task Distribution
+          </h2>
+          <app-task-bar-chart
+            [todoTasks]="todoTasks"
+            [inProgressTasks]="inProgressTasks"
+            [doneTasks]="doneTasks"
+          ></app-task-bar-chart>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="space-y-6">
+          <div
+            class="p-6 rounded-lg shadow-lg"
+            [class.bg-white]="!isDarkMode"
+            [class.bg-gray-800]="isDarkMode"
+          >
+            <h2
+              class="text-xl font-semibold mb-4"
+              [class.text-gray-800]="!isDarkMode"
+              [class.text-white]="isDarkMode"
+            >
+              Task Statistics
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+              <div
+                class="text-center p-4 rounded-lg bg-blue-100 dark:bg-blue-900"
+              >
+                <div
+                  class="text-2xl font-bold text-blue-600 dark:text-blue-300"
+                >
+                  {{ todoTasks.length }}
+                </div>
+                <div class="text-sm text-blue-600 dark:text-blue-300">
+                  To Do
+                </div>
+              </div>
+              <div
+                class="text-center p-4 rounded-lg bg-yellow-100 dark:bg-yellow-900"
+              >
+                <div
+                  class="text-2xl font-bold text-yellow-600 dark:text-yellow-300"
+                >
+                  {{ inProgressTasks.length }}
+                </div>
+                <div class="text-sm text-yellow-600 dark:text-yellow-300">
+                  In Progress
+                </div>
+              </div>
+              <div
+                class="text-center p-4 rounded-lg bg-green-100 dark:bg-green-900"
+              >
+                <div
+                  class="text-2xl font-bold text-green-600 dark:text-green-300"
+                >
+                  {{ doneTasks.length }}
+                </div>
+                <div class="text-sm text-green-600 dark:text-green-300">
+                  Done
+                </div>
+              </div>
+              <div
+                class="text-center p-4 rounded-lg bg-purple-100 dark:bg-purple-900"
+              >
+                <div
+                  class="text-2xl font-bold text-purple-600 dark:text-purple-300"
+                >
+                  {{
+                    todoTasks.length + inProgressTasks.length + doneTasks.length
+                  }}
+                </div>
+                <div class="text-sm text-purple-600 dark:text-purple-300">
+                  Total
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priority Distribution -->
+          <div
+            class="p-6 rounded-lg shadow-lg"
+            [class.bg-white]="!isDarkMode"
+            [class.bg-gray-800]="isDarkMode"
+          >
+            <h2
+              class="text-xl font-semibold mb-4"
+              [class.text-gray-800]="!isDarkMode"
+              [class.text-white]="isDarkMode"
+            >
+              Priority Distribution
+            </h2>
+            <div class="space-y-3">
+              <div
+                *ngFor="let priority of getPriorityStats()"
+                class="flex justify-between items-center"
+              >
+                <span
+                  [class.text-gray-700]="!isDarkMode"
+                  [class.text-gray-300]="isDarkMode"
+                >
+                  {{ priority.name }}
+                </span>
+                <span
+                  class="font-semibold"
+                  [class.text-gray-800]="!isDarkMode"
+                  [class.text-white]="isDarkMode"
+                >
+                  {{ priority.count }} tasks
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

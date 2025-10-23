@@ -35,9 +35,8 @@
   cdkDrag
   class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 border border-gray-200 dark:border-gray-700 cursor-move"
 >
-  <!-- [ngClass]="getTaskColor(task.status)" -->
   <div class="flex justify-between items-start mb-2">
-    <!-- <p
+    <p
       class="text-xs font-medium rounded-md p-1 uppercase"
       [ngClass]="
         getCategoryColorClass(task.category).bgClass +
@@ -46,27 +45,26 @@
       "
     >
       {{ task.category || 'No Label' }}
-    </p> -->
-    <button class="text-gray-400 hover:text-gray-600 text-2xl font-light">
-      ...
-    </button>
+    </p>
+    <div class="flex gap-1">
+      <!-- Edit/Menu button (three dots) -->
+      <button
+        (click)="onEdit()"
+        class="text-gray-400 hover:text-gray-600 text-xl font-light bg-transparent border-none outline-none p-0 m-0 focus:outline-none focus:ring-0 min-w-0 h-6 w-6 flex items-center justify-center"
+      >
+        ⋯
+      </button>
+      <!-- Delete button (× symbol) -->
+      <button
+        (click)="onDelete()"
+        class="text-gray-400 hover:text-red-500 text-xl font-light bg-transparent border-none outline-none p-0 m-0 focus:outline-none focus:ring-0 min-w-0 h-6 w-6 flex items-center justify-center"
+      >
+        ×
+      </button>
+    </div>
   </div>
 
   <div class="flex items-center mb-1">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-4 w-4 mr-2 text-gray-400 cursor-grab"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <line x1="18" y1="20" x2="6" y2="20"></line>
-      <line x1="18" y1="14" x2="6" y2="14"></line>
-      <line x1="18" y1="8" x2="6" y2="8"></line>
-    </svg>
     <h3
       class="font-semibold text-lg"
       [class.text-gray-800]="!isDarkMode"

@@ -1,0 +1,52 @@
+<div *ngIf="!showChart" class="p-6 grid grid-cols-3 gap-6">
+  <app-task-column
+    title="To do"
+    [tasks]="todoTasks"
+    [isDarkMode]="isDarkMode"
+    [sortOrder]="todoSortOrder"
+    [selectedCategory]="selectedCategory"
+    (addTask)="openAddTaskModal.emit('To Do')"
+    (editTask)="openEditTaskModal.emit($event)"
+    (dropTask)="drop($event, 'To Do')"
+    (sortTasks)="todoSortOrder = $event"
+  ></app-task-column>
+
+  <app-task-column
+    title="In progress"
+    [tasks]="inProgressTasks"
+    [isDarkMode]="isDarkMode"
+    [sortOrder]="inProgressSortOrder"
+    [selectedCategory]="selectedCategory"
+    (addTask)="openAddTaskModal.emit('In Progress')"
+    (editTask)="openEditTaskModal.emit($event)"
+    (dropTask)="drop($event, 'In Progress')"
+    (sortTasks)="inProgressSortOrder = $event"
+  ></app-task-column>
+
+  <app-task-column
+    title="Done"
+    [tasks]="doneTasks"
+    [isDarkMode]="isDarkMode"
+    [sortOrder]="doneSortOrder"
+    [selectedCategory]="selectedCategory"
+    (addTask)="openAddTaskModal.emit('Done')"
+    (editTask)="openEditTaskModal.emit($event)"
+    (dropTask)="drop($event, 'Done')"
+    (sortTasks)="doneSortOrder = $event"
+  ></app-task-column>
+</div>
+
+<div *ngIf="showChart" class="flex justify-center my-10">
+  <div
+    class="w-full max-w-3xl p-4 rounded-lg shadow-lg"
+    [class.bg-white]="!isDarkMode"
+    [class.bg-gray-800]="isDarkMode"
+  >
+    <app-task-bar-chart
+      [todoTasks]="todoTasks"
+      [inProgressTasks]="inProgressTasks"
+      [doneTasks]="doneTasks"
+    >
+    </app-task-bar-chart>
+  </div>
+</div>

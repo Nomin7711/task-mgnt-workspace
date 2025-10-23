@@ -1,0 +1,13 @@
+.active-link {
+    font-weight: 600;
+  }
+  
+  .active-link:not(.dark) {
+    background-color: rgb(243 232 255) !important; /* fuchsia-100 */
+    color: rgb(192 38 211) !important; /* fuchsia-600 */
+  }
+  
+  .dark .active-link {
+    background-color: rgb(76 29 149) !important; /* fuchsia-900 */
+    color: rgb(232 121 249) !important; /* fuchsia-400 */
+  }
