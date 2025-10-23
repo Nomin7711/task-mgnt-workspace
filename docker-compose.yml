@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4200:3000' # Map to 4200 to avoid conflict
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - '3000:3000' # Backend on port 3000 as expected
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - ALLOWED_ORIGINS=http://localhost:4200
+      - DB_PATH=/app/data/database.sqlite
+    networks:
+      - app-network
+
+volumes:
+  database_data:
+
+networks:
+  app-network:
+    driver: bridge
